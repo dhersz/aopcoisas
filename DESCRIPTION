@@ -1,0 +1,31 @@
+Type: Package
+Package: aopcoisas
+Title: Análises Variadas para o AOP
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Daniel",
+           family = "Herszenhut",
+           role = c("aut", "cre"),
+           email = "dhersz@gmail.com",
+           comment = c(ORCID = "0000-0001-8066-1105"))
+Description: Análises variadas feitas para o Projeto Acesso a
+    Oportunidades. Algumas funções do pacote só rodam corretamente quando
+    utilizadas de dentro do servidor do projeto, com o diretório de
+    trabalho um nível abaixo da sua pasta pessoal de repositórios (e.g.
+    git_daniel/projeto_ficticio).
+License: MIT + file LICENSE
+Depends: 
+    R (>= 3.5)
+Imports: 
+    checkmate,
+    data.table,
+    ggplot2,
+    kableExtra,
+    knitr,
+    r5r,
+    rmarkdown,
+    sf
+Suggests:
+    tibble
+Encoding: UTF-8
+RoxygenNote: 7.1.1

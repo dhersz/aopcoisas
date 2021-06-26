@@ -1,0 +1,102 @@
+---
+output: html_document
+params:
+  grade: NA
+  nome_muni: NA
+title: "Snaps - `r params$nome_muni`"
+---
+
+```{r, echo = FALSE}
+
+grade <- sf::st_as_sf(grade)
+
+# configuração do mapa
+
+mapa <- ggplot2::ggplot(grade) +
+  ggplot2::geom_sf(aes(fill = classificacao), color = NA) +
+  ggplot2::scale_fill_brewer(
+    name = "Classificação",
+    palette = "Reds",
+    drop = FALSE,
+    na.value = "gray80"
+  ) +
+  ggplot2::theme(
+    axis.text = ggplot2::element_blank(),
+    axis.ticks = ggplot2::element_blank(),
+    panel.background = ggplot2::element_blank()
+  )
+
+print(mapa)
+```
+
+```{r, echo = FALSE, results = "asis"}
+
+# tabela resumindo algumas informações importantes
+
+data.table::setDT(grade)
+
+tabela <- grade[
+  , 
+  .(
+    hexagonos = .N, 
+    pop = sum(pop), 
+    emp = sum(emp), 
+    saude = sum(saude), 
+    edu = sum(saude)
+  ), 
+  by = .(classificacao)
+]
+tabela <- tabela[order(classificacao)]
+
+# cria função pra formatar o total de população e oportunidades
+
+formato_bonitinho <- function(vetor_numerico) {
+  
+  percentual <- vetor_numerico / sum(vetor_numerico) * 100
+  percentual <-  formatC(
+    percentual, 
+    format = "f", 
+    decimal.mark = ",",
+    digits = 1
+  )
+  
+  absolutos <- formatC(
+    vetor_numerico, 
+    format = "d", 
+    big.mark =  ".", 
+    decimal.mark = ","
+  )
+  
+  resultado <- paste0(absolutos, " (", percentual, "%)")
+  
+  return(resultado)
+  
+}
+
+# formata a tabela
+
+colunas_relevantes <- setdiff(names(tabela), "classificacao")
+
+tabela[
+  , 
+  eval(colunas_relevantes) := lapply(.SD, formato_bonitinho), 
+  .SDcols = colunas_relevantes
+]
+
+kbl <- knitr::kable(
+  tabela,
+  col.names = c("Classificação", "Hexágonos", "População", "Trabalho", "Saúde", "Educação")
+)
+kbl <- kableExtra::kable_styling(
+  kbl,
+  bootstrap_options = c("striped", "hover", "condensed"),
+  full_width = FALSE,
+  position = "left"
+)
+kbl <- kableExtra::column_spec(kbl, 1, bold = TRUE)
+
+cat(kbl, "\n")
+```
+
+
+ 
