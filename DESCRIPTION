@@ -1,7 +1,7 @@
 Type: Package
 Package: aopcoisas
 Title: Análises Variadas para o AOP
-Version: 0.0.0.9001
+Version: 0.1.0
 Authors@R: 
     person(given = "Daniel",
            family = "Herszenhut",

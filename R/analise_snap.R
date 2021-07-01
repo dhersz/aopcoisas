@@ -255,3 +255,108 @@ criar_relatorio <- function(grade, sigla_muni, nome_muni) {
   return(grade)
 
 }
+
+
+
+#' Atualizar malhas viárias
+#'
+#' Atualiza as malhas viárias em formato \code{.pbf} e apaga o grafo gerado pelo
+#' R5.
+#'
+#' @param munis Uma string. A sigla do município, como utilizado no projeto -
+#'   uma sigla de três letras. Se \code{"todos"} (o padrão), roda a análise para
+#'   todos os municípios do projeto.
+#'
+#' @return \code{NULL}, invisivelmente. Função chamada principalmente pelo seus
+#' efeitos.
+#'
+#' @keywords internal
+atualizar_pbfs <- function(munis = "todos") {
+
+  todos_munis <- munis_list$munis_df$abrev_muni
+
+  # checando inputs
+
+  if (identical(munis, "todos")) munis <- todos_munis
+
+  checkmate::assert_names(munis, subset.of = todos_munis)
+
+  # move os .pbfs atualizados, na pasta data-raw/malha_viaria/2020 para as
+  # pastas dos grafos do r5
+
+  invisible(
+    lapply(
+      munis,
+      function(i)
+        file.copy(
+          paste0("../../data-raw/malha_viaria/2020/", i, "/", i, "_2020.osm.pbf"),
+          paste0("../../r5/graphs/2019/", i),
+          overwrite = TRUE
+        )
+    )
+  )
+
+  # o grafo do r5 passa a ser inválido, então apaga os .dat e .mapbdb que antes
+  # existiam na pasta
+  # se der erro é porque não havia arquivos, então essa etapa pode ser pulada
+
+  resultado_apagar <- tryCatch(
+      apagar_arquivos_r5(munis),
+      error = function(cnd) return(cnd)
+  )
+
+  return(invisible(NULL))
+
+}
+
+
+
+#' Apagar os arquivos gerados pelo R5
+#'
+#' Apaga os arquivos gerados pelo R5, em formato \code{.mapdb}, \code{.mapdb.p}
+#' e \code{.dat}.
+#'
+#' @param munis Uma string. A sigla do município, como utilizado no projeto -
+#'   uma sigla de três letras. Se \code{"todos"} (o padrão), roda a análise para
+#'   todos os municípios do projeto.
+#'
+#' @return \code{NULL}, invisivelmente. Função chamada principalmente pelo seus
+#' efeitos.
+#'
+#' @keywords internal
+apagar_arquivos_r5 <- function(munis = "todos") {
+
+  todos_munis <- munis_list$munis_df$abrev_muni
+
+  # checando inputs
+
+  if (identical(munis, "todos")) munis <- todos_munis
+
+  checkmate::assert_names(munis, subset.of = todos_munis)
+
+  # lista arquivos a serem apagados
+  # o vapply gera uma matriz com os arquivos de cada cidade
+
+  caminho_pastas <- paste0("../../r5/graphs/2019/", munis)
+
+  arquivos_para_apagar <- vapply(
+    caminho_pastas,
+    function(i) {
+      arquivos_na_pasta <- list.files(i)
+      arquivos_desejados <- arquivos_na_pasta[
+        grepl("\\.dat$", arquivos_na_pasta) |
+          grepl("\\.mapdb", arquivos_na_pasta)
+      ]
+      file.path(i, arquivos_desejados)
+    },
+    character(3)
+  )
+  arquivos_para_apagar <- as.vector(arquivos_para_apagar)
+
+  # apaga os arquivos
+
+  a <- file.remove(arquivos_para_apagar)
+
+  return(invisible(NULL))
+
+}
