@@ -12,9 +12,38 @@
 #'   acessibilidade. O padrão é 10 (metade dos cores do servidor).
 #'
 #' @section Detalhes:
+#' Calcula a acessibilidade usando a r5r::accessibility() como sem em cada
+#' hexágono houvesse uma oportunidade. Importante notar que literalmente todas
+#' as células das cidades contém uma oportunidade, e não apenas as que são
+#' utilizadas no roteamento do projeto, de fato. Embora os mapas gerados nos
+#' relatórios apresentem as células sem população e oportunidades de emprego,
+#' saúde e educação como NA, isso é feito em uma etapa de pós-processamento,
+#' apenas pra não apresentar como problemáticos hexágonos que não são
+#' considerados no projeto. Para ilustrar porque isso é importante, vale olhar
+#' os relatórios gerados pra cidade de São Paulo:
+#' \itemize{
+#'   \item{\code{relatorio_spo_full}: O resultado retornado pela
+#'         r5r::accessibility(). Calcula a acessibilidade mesmo para célculas
+#'         que não são utilizadas no projeto AOP porque não têm oportunidades e
+#'         pessoas;}
+#'   \item{\code{relatorio_spo}: O resultado como apresentado para todas as
+#'         cidades. Mostra os resultados comentados no item acima, mas retrata
+#'         as células sem oportunidades e pessoas como NA. Ou seja, os hexágonos
+#'         problemáticos são hexágonos considerados na análise e que precisam
+#'         ser tratados.}
+#'   \item{\code{relatorio_spo_antigo}: o resultado que é obtido quando se
+#'         calcula a acessibilidade apenas considerando os hexágonos
+#'         considerados no projeto. Muitos hexágonos passam a serem considerados
+#'         problemáticos não porque são pouco conectados com seus vizinhos, mas
+#'         porque não têm nenhum vizinhos (ou têm poucos) considerados no
+#'         projeto. O problema desses hexágonos, portanto, não está relacionado
+#'         à rede viária, mas sim ao isolamento, que é uma informação que se
+#'         obtém das análises do projeto. Esses hexágonos, portanto, não
+#'         devem ser corrigidos.}
+#' }
 #'
-#' @return Uma lista com a acessibilidade unitária de cada cidade, em formato
-#'   \code{c("data.table", "sf")}. Retornada de forma invisível.
+#' @return Uma lista com hexágonos que tenham acessibilidade unitária menor ou
+#' igual a 15 e maior do que 0, pra cada cidade. Retornada de forma invisível.
 #'
 #' @examples
 #' if (interactive()) {
@@ -161,11 +190,11 @@ analisar_acess_unitaria <- function(munis = "todos", n_cores = 10) {
   )
 
   # salva também uma lista que identifica os hexágonso problemáticos (com
-  # acessibilidade menor ou igual a 10) em cada cidade
+  # acessibilidade menor ou igual a 15 e maior do 0) em cada cidade
 
   hexagonos_problematicos <- lapply(
     grades,
-    function(dt) dt[acessibilidade <= 20]$id_hex
+    function(dt) dt[acessibilidade <= 15 & acessibilidade > 0]$id_hex
   )
 
   saveRDS(
@@ -182,7 +211,11 @@ analisar_acess_unitaria <- function(munis = "todos", n_cores = 10) {
 #' Criar relatório de análise da acessibilidade unitária
 #'
 #' Cria um relatório de análise da acessibilidade unitária. Inclui um mapa com a
-#' distribuição da acessibilidade.
+#' distribuição da acessibilidade, destacando quais são os hexágonos
+#' problemáticos (com menos do que 15 de acessibilidade e mais do que 0).
+#' Também apresenta uma tabela com hexágonos com acessibilidade menor do que 15,
+#' dessa vez incluindo os com acessibilidade igual a 0. Hexágonos com
+#' acessibilidade igual a 0 são aqueles em que o r5 não consegue fazer snap.
 #'
 #' @param grade Um \code{c("data.table", "sf")} com a grade e dados do
 #'   município.
@@ -217,6 +250,6 @@ criar_relatorio_acess_unitaria <- function(grade, sigla_muni, nome_muni) {
     quiet = TRUE
   )
 
-  return(grade)
+  return(invisible(grade))
 
 }

@@ -13,7 +13,7 @@ grade_geo <- sf::st_as_sf(grade)
 # identifica células com acessibilidade menor ou igual a 10
 # condicionalmente adiciona círculos que ajudam a identificar essas células
 
-hexs_problema <- data.table::copy(grade[acessibilidade <= 20])
+hexs_problema <- data.table::copy(grade[acessibilidade <= 15])
 
 hexs_problema_geo <- sf::st_as_sf(hexs_problema[acessibilidade > 0])
 hexs_problema_geo <- sf::st_centroid(hexs_problema_geo)

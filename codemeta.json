@@ -8,7 +8,7 @@
   "description": "Análises variadas feitas para o Projeto Acesso a\n    Oportunidades. Algumas funções do pacote só rodam corretamente quando\n    utilizadas de dentro do servidor do projeto, com o diretório de\n    trabalho um nível abaixo da sua pasta pessoal de repositórios (e.g.\n    git_daniel/projeto_ficticio).",
   "name": "aopcoisas: Análises Variadas para o AOP",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.1.0.9000",
+  "version": "0.2.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -80,6 +80,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=data.table"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "dplyr",
+      "name": "dplyr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=dplyr"
     },
     {
       "@type": "SoftwareApplication",
