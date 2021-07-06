@@ -147,9 +147,9 @@ analisar_snap <- function(munis = "todos") {
 
   # cria uma pasta pra salvar os mapas
 
-  if(!dir.exists("./resultados")) dir.create("./resultados")
+  if (!dir.exists("./resultados")) dir.create("./resultados")
 
-  if(!dir.exists("./resultados/analise_snap"))
+  if (!dir.exists("./resultados/analise_snap"))
     dir.create("./resultados/analise_snap")
 
   # cria os relatórios e salva na pasta acima
@@ -158,7 +158,7 @@ analisar_snap <- function(munis = "todos") {
 
   invisible(
     mapply(
-      criar_relatorio,
+      criar_relatorio_snap,
       grade = grades,
       sigla_muni = munis,
       nome_muni = munis_list$munis_df$name_muni[indices_muni],
@@ -228,7 +228,7 @@ classificar_snap <- function(distancia) {
 #'   invisivelmente.
 #'
 #' @keywords internal
-criar_relatorio <- function(grade, sigla_muni, nome_muni) {
+criar_relatorio_snap <- function(grade, sigla_muni, nome_muni) {
 
   # cria caminho pro arquivo com normalizePath porque senão o rmarkdown
   # interpreta errado

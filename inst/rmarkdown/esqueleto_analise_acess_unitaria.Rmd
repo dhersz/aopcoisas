@@ -1,0 +1,98 @@
+---
+output: html_document
+params:
+  grade: NA
+  nome_muni: NA
+title: "Acessibilidade unitária - `r params$nome_muni`"
+---
+
+```{r, echo = FALSE, fig.height = 7, fig.width = 10, warning = FALSE}
+
+grade_geo <- sf::st_as_sf(grade)
+
+# identifica células com acessibilidade menor ou igual a 10
+# condicionalmente adiciona círculos que ajudam a identificar essas células
+
+hexs_problema <- data.table::copy(grade[acessibilidade <= 20])
+
+hexs_problema_geo <- sf::st_as_sf(hexs_problema[acessibilidade > 0])
+hexs_problema_geo <- sf::st_centroid(hexs_problema_geo)
+
+# configuração do mapa
+
+mapa <- ggplot2::ggplot() +
+  ggplot2::geom_sf(data = grade_geo, aes(fill = acessibilidade), color = NA) +
+  ggplot2::scale_fill_viridis_c(
+    name = "Acessibilidade",
+    option = "inferno",
+    na.value = "gray80"
+  ) +
+  ggplot2::geom_sf(
+    data = hexs_problema_geo,
+    size = ifelse(
+      nome_muni %in% c("Fortaleza", "Guarulhos", "Duque de Caxias", "Sao Paulo"), 
+      20, 
+      10
+    ),
+    fill = NA, 
+    shape = 21, 
+    stroke = 1.5
+  ) +
+  ggplot2::theme(
+    axis.text = ggplot2::element_blank(),
+    axis.ticks = ggplot2::element_blank(),
+    panel.background = ggplot2::element_blank()
+  )
+
+print(mapa)
+```
+
+```{r, echo = FALSE, results = "asis"}
+# tabela resumindo algumas informações importantes
+
+if (nrow(hexs_problema) > 0) {
+  
+  hexs_problema <- hexs_problema[, geom := NULL]
+  hexs_problema <- hexs_problema[, .(id_hex, acessibilidade, pop, emp, saude, edu)]
+  hexs_problema <- hexs_problema[order(-acessibilidade)]
+  
+  # função pra formatar o total de população e oportunidades
+  
+  formato_bonitinho <- function(vetor_numerico) {
+    formatC(
+      vetor_numerico,
+      format = "d",
+      big.mark =  ".",
+      decimal.mark = ","
+    )
+  }
+  
+  # formata a tabela
+  
+  colunas_relevantes <- c("pop", "emp", "saude", "edu")
+  
+  hexs_problema[
+    ,
+    eval(colunas_relevantes) := lapply(.SD, formato_bonitinho),
+    .SDcols = colunas_relevantes
+  ]
+  
+  kbl <- knitr::kable(
+    hexs_problema,
+    col.names = c("ID", "Hexágonos alcançados", "População", "Trabalho", "Saúde", "Educação")
+  )
+  kbl <- kableExtra::kable_styling(
+    kbl,
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "left"
+  )
+  kbl <- kableExtra::column_spec(kbl, 1, bold = TRUE)
+  
+  cat(kbl, "\n")
+  
+}
+```
+
+
+ 
