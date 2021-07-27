@@ -1,7 +1,7 @@
 Type: Package
 Package: aopcoisas
 Title: Análises Variadas para o AOP
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Daniel",
            family = "Herszenhut",
@@ -30,3 +30,4 @@ Suggests:
     tibble
 Encoding: UTF-8
 RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)

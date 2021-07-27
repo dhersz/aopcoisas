@@ -16,7 +16,7 @@ município.}
 }
 \value{
 Retorna o \code{data.table} passado no parâmetro \code{grade}
-  invisivelmente.
+invisivelmente.
 }
 \description{
 Cria um relatório de análise da acessibilidade unitária. Inclui um mapa com a

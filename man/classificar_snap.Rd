@@ -16,13 +16,13 @@ Um vector de factors com a classificação de cada snap.
 Classifica cada snap pela distância entre o ponto original e o encontrado
 pelo R5. São quatro as possíveis categorias:
 \itemize{
-  \item{Bom: dentro do hexágono, ou seja, a uma distância de até 174~ metros
-        (tamanho da aresta do hexágono);}
-  \item{Ok: dentro dos hexágonos imediatamente vizinhos, ou seja, a uma
-        distãncia entre 174~ e 452~ metros (três vez a distância do centroide
-        do hexágono ao ponto médio de sua aresta);}
-  \item{Ruim: entre 452~ e 1600 metros; bem ruim, mas pelo menos achou algo.}
-  \item{Péssimo: não conseguiu fazer o snap.}
+\item{Bom: dentro do hexágono, ou seja, a uma distância de até 174~ metros
+(tamanho da aresta do hexágono);}
+\item{Ok: dentro dos hexágonos imediatamente vizinhos, ou seja, a uma
+distãncia entre 174~ e 452~ metros (três vez a distância do centroide
+do hexágono ao ponto médio de sua aresta);}
+\item{Ruim: entre 452~ e 1600 metros; bem ruim, mas pelo menos achou algo.}
+\item{Péssimo: não conseguiu fazer o snap.}
 }
 }
 \keyword{internal}

@@ -36,24 +36,24 @@ apenas pra não apresentar como problemáticos hexágonos que não são
 considerados no projeto. Para ilustrar porque isso é importante, vale olhar
 os relatórios gerados pra cidade de São Paulo:
 \itemize{
-  \item{\code{relatorio_spo_full}: O resultado retornado pela
-        r5r::accessibility(). Calcula a acessibilidade mesmo para célculas
-        que não são utilizadas no projeto AOP porque não têm oportunidades e
-        pessoas;}
-  \item{\code{relatorio_spo}: O resultado como apresentado para todas as
-        cidades. Mostra os resultados comentados no item acima, mas retrata
-        as células sem oportunidades e pessoas como NA. Ou seja, os hexágonos
-        problemáticos são hexágonos considerados na análise e que precisam
-        ser tratados.}
-  \item{\code{relatorio_spo_antigo}: o resultado que é obtido quando se
-        calcula a acessibilidade apenas considerando os hexágonos
-        considerados no projeto. Muitos hexágonos passam a serem considerados
-        problemáticos não porque são pouco conectados com seus vizinhos, mas
-        porque não têm nenhum vizinhos (ou têm poucos) considerados no
-        projeto. O problema desses hexágonos, portanto, não está relacionado
-        à rede viária, mas sim ao isolamento, que é uma informação que se
-        obtém das análises do projeto. Esses hexágonos, portanto, não
-        devem ser corrigidos.}
+\item{\code{relatorio_spo_full}: O resultado retornado pela
+r5r::accessibility(). Calcula a acessibilidade mesmo para célculas
+que não são utilizadas no projeto AOP porque não têm oportunidades e
+pessoas;}
+\item{\code{relatorio_spo}: O resultado como apresentado para todas as
+cidades. Mostra os resultados comentados no item acima, mas retrata
+as células sem oportunidades e pessoas como NA. Ou seja, os hexágonos
+problemáticos são hexágonos considerados na análise e que precisam
+ser tratados.}
+\item{\code{relatorio_spo_antigo}: o resultado que é obtido quando se
+calcula a acessibilidade apenas considerando os hexágonos
+considerados no projeto. Muitos hexágonos passam a serem considerados
+problemáticos não porque são pouco conectados com seus vizinhos, mas
+porque não têm nenhum vizinhos (ou têm poucos) considerados no
+projeto. O problema desses hexágonos, portanto, não está relacionado
+à rede viária, mas sim ao isolamento, que é uma informação que se
+obtém das análises do projeto. Esses hexágonos, portanto, não
+devem ser corrigidos.}
 }
 }
 

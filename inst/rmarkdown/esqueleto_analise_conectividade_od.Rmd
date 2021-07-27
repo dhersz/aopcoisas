@@ -1,0 +1,172 @@
+---
+output: html_document
+params:
+  grade: NA
+  nome_muni: NA
+title: "Conectividade como origem e destino - `r params$nome_muni`"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, fig.width = 10, fig.height = 7, warning = FALSE
+)
+```
+
+```{r}
+
+# função pra formatar o total de população e oportunidades
+
+formato_bonitinho <- function(vetor_numerico) {
+  formatC(
+    vetor_numerico,
+    format = "d",
+    big.mark =  ".",
+    decimal.mark = ","
+  )
+}
+
+colunas_relevantes <- c("pop", "emp", "saude", "edu")
+
+grade[
+  ,
+  eval(colunas_relevantes) := lapply(.SD, formato_bonitinho),
+  .SDcols = colunas_relevantes
+]
+
+# cria 'sf's com a grade, hexágonos que alcançam poucos destinos e hexágonos que
+# são alcançados por poucas origens
+
+poucos_destinos <- data.table::copy(grade[destinos_alcancados <= 15])
+poucas_origens <- data.table::copy(grade[origens_alcancam <= 15])
+
+grade_geo <- sf::st_as_sf(grade)
+suppressWarnings({
+  poucos_destinos_geo <- sf::st_centroid(sf::st_as_sf(poucos_destinos))
+  poucas_origens_geo <- sf::st_centroid(sf::st_as_sf(poucas_origens))
+})
+```
+
+# Destinos alcançados
+
+```{r}
+
+mapa <- ggplot2::ggplot() +
+  ggplot2::geom_sf(
+    data = grade_geo, 
+    aes(fill = destinos_alcancados), 
+    color = NA
+  ) +
+  ggplot2::scale_fill_viridis_c(
+    name = "Destinos alcançados",
+    option = "inferno",
+    na.value = "gray80"
+  ) +
+  ggplot2::geom_sf(
+    data = poucos_destinos_geo,
+    size = ifelse(
+      nome_muni %in% c("Fortaleza", "Guarulhos", "Duque de Caxias", "Sao Paulo"),
+      20,
+      10
+    ),
+    fill = NA,
+    shape = 21,
+    stroke = 1.5
+  ) +
+  ggplot2::theme(
+    axis.text = ggplot2::element_blank(),
+    axis.ticks = ggplot2::element_blank(),
+    panel.background = ggplot2::element_blank()
+  )
+
+print(mapa)
+```
+
+```{r, results = "asis"}
+if (nrow(poucos_destinos) > 0) {
+
+  poucos_destinos <- poucos_destinos[, geom := NULL]
+  poucos_destinos <- poucos_destinos[
+    , 
+    .(id_hex, destinos_alcancados, pop, emp, saude, edu)
+  ]
+  poucos_destinos <- poucos_destinos[order(-destinos_alcancados)]
+
+  kbl <- knitr::kable(
+    poucos_destinos,
+    col.names = c("ID", "Destinos alcançados", "População", "Trabalho", "Saúde", "Educação")
+  )
+  kbl <- kableExtra::kable_styling(
+    kbl,
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "left"
+  )
+  kbl <- kableExtra::column_spec(kbl, 1, bold = TRUE)
+
+  cat(kbl, "\n")
+
+}
+```
+
+# Origens alcançam
+
+```{r}
+
+mapa <- ggplot2::ggplot() +
+  ggplot2::geom_sf(
+    data = grade_geo, 
+    aes(fill = origens_alcancam), 
+    color = NA
+  ) +
+  ggplot2::scale_fill_viridis_c(
+    name = "origens que alcançam",
+    option = "inferno",
+    na.value = "gray80"
+  ) +
+  ggplot2::geom_sf(
+    data = poucas_origens_geo,
+    size = ifelse(
+      nome_muni %in% c("Fortaleza", "Guarulhos", "Duque de Caxias", "Sao Paulo"),
+      20,
+      10
+    ),
+    fill = NA,
+    shape = 21,
+    stroke = 1.5
+  ) +
+  ggplot2::theme(
+    axis.text = ggplot2::element_blank(),
+    axis.ticks = ggplot2::element_blank(),
+    panel.background = ggplot2::element_blank()
+  )
+
+print(mapa)
+```
+
+```{r, results = "asis"}
+if (nrow(poucas_origens) > 0) {
+
+  poucas_origens <- poucas_origens[, geom := NULL]
+  poucas_origens <- poucas_origens[
+    , 
+    .(id_hex, origens_alcancam, pop, emp, saude, edu)
+  ]
+  poucas_origens <- poucas_origens[order(-origens_alcancam)]
+
+  kbl <- knitr::kable(
+    poucas_origens,
+    col.names = c("ID", "Origens alcançam", "População", "Trabalho", "Saúde", "Educação")
+  )
+  kbl <- kableExtra::kable_styling(
+    kbl,
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    position = "left"
+  )
+  kbl <- kableExtra::column_spec(kbl, 1, bold = TRUE)
+
+  cat(kbl, "\n")
+
+}
+```
+

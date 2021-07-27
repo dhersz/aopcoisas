@@ -138,11 +138,11 @@ analisar_snap <- function(munis = "todos") {
 
   # classifica hexágonos sem população e oportunidades como NA
 
-  grades <- lapply(
-    grades,
-    function(dt)
-      dt[pop == 0 & emp == 0 & saude == 0 & edu == 0, classificacao := NA]
-  )
+  # grades <- lapply(
+  #   grades,
+  #   function(dt)
+  #     dt[pop == 0 & emp == 0 & saude == 0 & edu == 0, classificacao := NA]
+  # )
   names(grades) <- munis
 
   # cria uma pasta pra salvar os mapas

@@ -13,7 +13,7 @@ todos os municípios do projeto.}
 }
 \value{
 Uma lista com a classificação dos snaps de cada cidade, em formato
-  \code{c("data.table", "sf")}. Retornada de forma invisível.
+\code{c("data.table", "sf")}. Retornada de forma invisível.
 }
 \description{
 Acha a distância do centroide de cada célula das grades utilizadas no projeto
@@ -27,13 +27,13 @@ Primeiro aplica a função \code{r5r::find_snap()} pra achar o snap dos
 centroides das células das grades usadas no projeto.
 Classifica esses snaps em quatro possíveis categorias:
 \itemize{
-  \item{Bom: dentro do hexágono, ou seja, a uma distância de até 174~ metros
-        (tamanho da aresta do hexágono);}
-  \item{Ok: dentro dos hexágonos imediatamente vizinhos, ou seja, a uma
-        distãncia entre 174~ e 452~ metros (três vez a distância do centroide
-        do hexágono ao ponto médio de sua aresta);}
-  \item{Ruim: entre 452~ e 1600 metros; bem ruim, mas pelo menos achou algo.}
-  \item{Péssimo: não conseguiu fazer o snap.}
+\item{Bom: dentro do hexágono, ou seja, a uma distância de até 174~ metros
+(tamanho da aresta do hexágono);}
+\item{Ok: dentro dos hexágonos imediatamente vizinhos, ou seja, a uma
+distãncia entre 174~ e 452~ metros (três vez a distância do centroide
+do hexágono ao ponto médio de sua aresta);}
+\item{Ruim: entre 452~ e 1600 metros; bem ruim, mas pelo menos achou algo.}
+\item{Péssimo: não conseguiu fazer o snap.}
 }
 Depois gera um relatório que inclui um mapa da distribuição de cada categoria
 na cidade e uma tabela que resume o número de pessoas e oportunidades por
