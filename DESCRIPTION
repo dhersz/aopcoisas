@@ -1,7 +1,7 @@
 Type: Package
 Package: aopcoisas
 Title: Análises Variadas para o AOP
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: 
     person(given = "Daniel",
            family = "Herszenhut",
@@ -23,6 +23,7 @@ Imports:
     ggplot2,
     kableExtra,
     knitr,
+    plyr,
     r5r,
     rmarkdown,
     sf

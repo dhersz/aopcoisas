@@ -8,13 +8,13 @@
   "description": "Análises variadas feitas para o Projeto Acesso a\n    Oportunidades. Algumas funções do pacote só rodam corretamente quando\n    utilizadas de dentro do servidor do projeto, com o diretório de\n    trabalho um nível abaixo da sua pasta pessoal de repositórios (e.g.\n    git_daniel/projeto_ficticio).",
   "name": "aopcoisas: Análises Variadas para o AOP",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.0.2 (2020-06-22)",
+  "runtimePlatform": "R version 4.1.0 (2021-05-18)",
   "author": [
     {
       "@type": "Person",
@@ -131,6 +131,18 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "plyr",
+      "name": "plyr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=plyr"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "r5r",
       "name": "r5r",
       "provider": {
@@ -167,5 +179,5 @@
     }
   ],
   "codeRepository": "https://github.com/dhersz/aopcoisas",
-  "fileSize": "0KB"
+  "fileSize": "59440.5KB"
 }
