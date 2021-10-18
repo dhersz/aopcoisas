@@ -359,6 +359,114 @@ analisar_resultados_gmaps <- function(status = c("todos", "M", "T", "U", "sujeir
 
 #' @rdname analisar_resultados_geocode
 #' @export
+analisar_resultados_bsb <- function(status = c("todos", "M", "T", "U")) {
+
+  status <- status[1]
+
+  # le os dados
+
+  amostra <- data.table::fread(
+    "../../data/geocode/streetmap_eval/validated_sample_gmaps_bsb.csv"
+  )
+
+  # traz a informação se na base do arcgis o endereço foi match ou tie
+
+  amostra_arcgis <- data.table::fread(
+    "../../data/geocode/streetmap_eval/validated_large_sample_completo.csv"
+  )
+
+  amostra[amostra_arcgis, on = "cnefe_id", geocode_status := i.geocode_status]
+
+  # transforma a classificacao em factor
+
+  classificacao <- c("VALID", "GOOD", "AVERAGE", "BAD")
+  labels <- c("VAL.", "GD.", "AVE.", "BAD")
+  amostra[
+    ,
+    geocode_result := factor(
+      geocode_result,
+      levels = classificacao,
+      labels = labels
+    )
+  ]
+
+  # transforma o tipo de geocode em factor e ordena ele segundo a qtd de vezes
+  # que cada categoria aparece
+
+  qtd_tipo <- amostra[, .N, by = geocode_precision]
+  qtd_tipo <- qtd_tipo[order(-N)]
+  amostra[
+    ,
+    geocode_precision := factor(
+      geocode_precision,
+      levels = qtd_tipo$geocode_precision
+    )
+  ]
+
+  # prepara uma base pra gerar labels pro grafico
+
+  pcts <- amostra[, .N, by = .(geocode_precision, geocode_result)]
+  pcts[, labels := N / sum(N) * 100, by = .(geocode_precision)]
+  pcts[, labels := paste0(formatC(labels, format = "f", digits = 1), "%")]
+
+  # prepara uma base pra gerar o total de observacoes por facet
+
+  totais <- pcts[, sum(N), by = .(geocode_precision)]
+
+  # prepara o grafico
+
+  grafico <- ggplot2::ggplot(amostra) +
+    ggplot2::facet_wrap(~ geocode_precision, ncol = 6) +
+    ggplot2::geom_bar(aes(geocode_result)) +
+    ggplot2::geom_text(
+      data = pcts,
+      aes(geocode_result, N, label = labels),
+      size = 2.4,
+      vjust = -0.3
+    ) +
+    ggplot2::geom_text(
+      data = totais,
+      aes(4, 3000, label = V1),
+      size = 2.7,
+      vjust = 0.7
+    ) +
+    ggplot2::ylim(0, 3000) +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank()
+    )
+
+  # cria uma pasta e salva o grafico
+
+  if (!dir.exists("./resultados")) dir.create("./resultados")
+
+  if (!dir.exists("./resultados/analise_resultados_geocode"))
+    dir.create("./resultados/analise_resultados_geocode")
+
+  nome_status <- data.table::fcase(
+    status == "M", "match",
+    status == "U", "unmatch",
+    status == "T", "tie",
+    status == "todos", "todos"
+  )
+
+  nome_arquivo <- paste0(
+    "./resultados/analise_resultados_geocode/",
+    "analise_gmaps_bsb_", nome_status, ".png"
+  )
+
+  ggplot2::ggsave(
+    nome_arquivo,
+    width = 23,
+    height = 12,
+    units = "cm",
+    dpi = 150
+  )
+
+}
+
+
+#' @rdname analisar_resultados_geocode
+#' @export
 gerar_analises_geocode <- function() {
   bases <- c("completo", "completo_grande")
   status <- c("todos", "M", "T")
@@ -366,5 +474,6 @@ gerar_analises_geocode <- function() {
     lapply(bases, analisar_resultados_geocode, status = i)
     analisar_resultados_galileo()
     analisar_resultados_gmaps(status = i)
+    analisar_resultados_bsb(status = i)
   }))
 }
