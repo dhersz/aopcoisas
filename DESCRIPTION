@@ -21,6 +21,8 @@ Imports:
     data.table,
     dplyr,
     ggplot2,
+    gtfsio,
+    gtfstools,
     kableExtra,
     knitr,
     plyr,
