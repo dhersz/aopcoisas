@@ -8,13 +8,13 @@
   "description": "Análises variadas feitas para o Projeto Acesso a\n    Oportunidades. Algumas funções do pacote só rodam corretamente quando\n    utilizadas de dentro do servidor do projeto, com o diretório de\n    trabalho um nível abaixo da sua pasta pessoal de repositórios (e.g.\n    git_daniel/projeto_ficticio).",
   "name": "aopcoisas: Análises Variadas para o AOP",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.1.0 (2021-05-18)",
+  "runtimePlatform": "R version 4.1.1 (2021-08-10)",
   "author": [
     {
       "@type": "Person",
@@ -107,6 +107,30 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "gtfsio",
+      "name": "gtfsio",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=gtfsio"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "gtfstools",
+      "name": "gtfstools",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=gtfstools"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "kableExtra",
       "name": "kableExtra",
       "provider": {
@@ -179,5 +203,5 @@
     }
   ],
   "codeRepository": "https://github.com/dhersz/aopcoisas",
-  "fileSize": "59440.5KB"
+  "fileSize": "59508.881KB"
 }
