@@ -1,7 +1,7 @@
-corrigir_velocidades_gtfs <- function(log = TRUE) {
+corrigir_velocidades_gtfs <- function(anos = NULL, cidades = NULL, log = TRUE) {
 
-  anos <- 2017:2020
-  cidades <- munis_list$munis_df$abrev_muni
+  if (is.null(anos)) anos <- 2017:2020
+  if (is.null(cidades)) cidades <- munis_list$munis_df$abrev_muni
 
   if (log) {
     caminho_log <- "../../data/gtfs/log.txt"
@@ -16,10 +16,7 @@ corrigir_velocidades_gtfs <- function(log = TRUE) {
     for (cidade in cidades) {
       cat(cidade, "-", ano, "\n")
 
-      dir_arquivos <- file.path("../../otp/graphs", ano, cidade)
-      arquivos <- list.files(dir_arquivos)
-
-      arquivos_gtfs <- arquivos[grepl("\\.zip$", arquivos)]
+      arquivos_gtfs <- lista_arquivos_gtfs(ano, cidade)
 
       if (!identical(arquivos_gtfs, character(0))) {
 
@@ -30,26 +27,29 @@ corrigir_velocidades_gtfs <- function(log = TRUE) {
               dir.create(dir_resultado, recursive = TRUE)
             }
 
-            # pra cada arquivo gtfs encontrado, corrige a velocidade e salva na nova
-            # pasta com nome atualizado
+            # pra cada arquivo gtfs encontrado, corrige a velocidade e salva na
+            # nova pasta com nome atualizado
             for (antigo_gtfs in arquivos_gtfs) {
-              cat("  *", antigo_gtfs, "\n")
-              caminho_antigo_gtfs <- file.path(dir_arquivos, antigo_gtfs)
+              nome_gtfs <- basename(antigo_gtfs)
 
-              novo_gtfs <- corrigir_velocidades(caminho_antigo_gtfs, log)
+              cat("  *", nome_gtfs, "\n")
+              cat("    - caminho antigo:", antigo_gtfs, "\n")
+
+              novo_gtfs <- corrigir_velocidades(antigo_gtfs, log, ano, cidade)
               caminho_novo_gtfs <- file.path(
                 dir_resultado,
-                sub("\\.zip", "_updated_speed.zip", antigo_gtfs)
+                sub("\\.zip", "_updated_speed.zip", nome_gtfs)
               )
 
               gtfstools::write_gtfs(novo_gtfs, caminho_novo_gtfs)
+              cat("    - caminho final:", caminho_novo_gtfs, "\n")
             }
           },
           warning = function(cnd) if (log) print(cnd$message)
         )
-      }
 
-      if (log) cat("\n")
+        if (log) cat("\n")
+      }
     }
   }
 
@@ -57,20 +57,62 @@ corrigir_velocidades_gtfs <- function(log = TRUE) {
 
 
 
-corrigir_velocidades <- function(caminho, log) {
-  gtfs <- gtfstools::read_gtfs(caminho)
+lista_arquivos_gtfs <- function(ano, cidade) {
+
+  if (ano == 2019 && (cidade == "goi" || cidade == "rec")) {
+    dir_arquivos <- file.path("../../data-raw/gtfs", cidade, ano)
+  } else if (ano == 2020 && (cidade == "goi" || cidade == "rec")) {
+    dir_arquivos <- file.path("../../data-raw/gtfs", cidade, ano - 1)
+  } else {
+    dir_arquivos <- file.path("../../otp/graphs", ano, cidade)
+  }
+
+  arquivos <- list.files(dir_arquivos)
+  arquivos <- arquivos[grepl("\\.zip$", arquivos)]
+
+  if ((ano == 2019 || ano == 2020) && (cidade == "rec")) {
+    arquivos <- arquivos[grepl("2019-09_mod", arquivos)]
+  }
+
+  arquivos_gtfs <- file.path(dir_arquivos, arquivos)
+
+  return(arquivos_gtfs)
+
+}
+
+
+
+corrigir_velocidades <- function(caminho_gtfs, log, ano, cidade) {
+  gtfs <- gtfstools::read_gtfs(caminho_gtfs)
+
+  caminho_shape_municipio <- file.path(
+    "../../data-raw/municipios",
+    ano,
+    paste0("municipio_", cidade, "_", ano, ".rds")
+  )
+  shape_municipio <- readRDS(caminho_shape_municipio)
 
   if (gtfsio::check_file_exists(gtfs, "shapes")) {
+    gtfs <- gtfstools::filter_by_sf(gtfs, shape_municipio)
+
     viagens <- gtfstools::get_trip_speed(gtfs)
 
-    if (log) print(summary(viagens))
-
-    viagens_problematicas <- viagens[speed > 80 | speed < 2]$trip_id
+    if (log) cat("    - total de viagens:", nrow(viagens), "\n")
 
     # talvez adicionar um na.rm = TRUE aqui depois
     velocidade_media <- mean(
       viagens[speed <= 80 & speed >= 2,]$speed
     )
+
+    if (log) cat("    - velocidade media:", velocidade_media, "\n")
+
+    viagens_problematicas <- viagens[speed > 80 | speed < 2]$trip_id
+
+    if (log) {
+      cat("    - viagens problematicas:", length(viagens_problematicas), "\n")
+      cat("      > muito lentas:", nrow(viagens[speed < 2]), "\n")
+      cat("      > muito rapidas:", nrow(viagens[speed > 80]), "\n")
+    }
 
     gtfs <- gtfstools::set_trip_speed(
       gtfs,
